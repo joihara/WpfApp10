@@ -5,7 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp10"
         mc:Ignorable="d"
-        Title="Telegram bot" Height="450" Width="800" ResizeMode="NoResize">
+        Title="Telegram bot" 
+        MinHeight="450"
+        Height="450" 
+        MinWidth="800"
+        Width="800">
     <Grid>
         <Grid x:Name="BotEnter" d:IsHidden="True">
             <Grid.RowDefinitions>
@@ -13,7 +17,7 @@
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="35"/>
                 <RowDefinition Height="40"/>
-                <RowDefinition Height="223"/>
+                <RowDefinition Height="223*"/>
                 <RowDefinition Height="32"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -24,7 +28,8 @@
                     IsEnabled="False"
                     Content="Запустить бота" 
                     Grid.Row="5"
-                    Margin="5" Click="RunBot_Click"
+                    Margin="5" 
+                    Click="RunBot_Click"
                     />
 
             <ListBox x:Name="ListSelectBot" 
@@ -41,29 +46,39 @@
                     Content="Создать бота" 
                     Grid.Column="1" 
                     Grid.Row="5"
-                    Margin="5" Click="CreateBot_Click"
+                    Margin="5" 
+                    Click="CreateBot_Click"
                     />
 
             <Label Content="Название бота"
                    Grid.Row="0"
                    Grid.Column="1" 
                    HorizontalAlignment="Center" 
-                   VerticalAlignment="Center" Height="26" Margin="79,5,77,5" Width="90"/>
+                   VerticalAlignment="Center" 
+                   Height="26" 
+                   Margin="79,5,77,5" 
+                   Width="90"/>
+            
             <TextBox x:Name="NameBot" 
                      Grid.Column="1"
                      Grid.Row="1"
-                     Margin="5,6,5,5" TextChanged="NameBot_TextChanged"
+                     Margin="5,6,5,5" 
+                     TextChanged="NameBot_TextChanged"
                      />
 
             <Label Content="Токен бота"
                    Grid.Row="2"
                    Grid.Column="1" 
                    HorizontalAlignment="Center" 
-                   VerticalAlignment="Center" Height="26" Margin="89,5,87,5" Width="70"/>
+                   VerticalAlignment="Center" 
+                   Height="26" 
+                   Margin="89,5,87,5" 
+                   Width="70"/>
             <TextBox x:Name="TokenBot" 
                      Grid.Column="1"
                      Grid.Row="3"
-                     Margin="5,5,5,6" TextChanged="TokenBot_TextChanged"
+                     Margin="5,5,5,6" 
+                     TextChanged="TokenBot_TextChanged"
                      />
 
         </Grid>
@@ -71,7 +86,8 @@
         <Grid x:Name="BotSelect" 
               Visibility="Collapsed">
             <Grid.RowDefinitions>
-                <RowDefinition Height="391"/>
+                <RowDefinition Height="385*"/>
+                <RowDefinition Height="36*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="280*"/>
@@ -80,16 +96,27 @@
             <ListBox x:Name="logList" 
                  Grid.Column="0"
                  HorizontalAlignment="Stretch" 
-                 Margin="5" 
+                 Margin="5,5,5,4" 
                  VerticalAlignment="Stretch" 
                  >
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border BorderBrush="Black" Margin="5" BorderThickness="1" CornerRadius="10">
+                        <Border BorderBrush="Black" 
+                                Margin="5" 
+                                BorderThickness="1" 
+                                CornerRadius="5">
                             <StackPanel Margin="10">
-                                <TextBlock Text="{Binding FirstName}" Margin="0" FontSize="15"/>
-                                <TextBlock Text="{Binding Msg}" Margin="0" FontSize="20"/>
-                                <TextBlock Text="{Binding Time}" Margin="10 0" FontSize="10" Foreground="Gray" TextAlignment="Right"/>
+                                <TextBlock Text="{Binding FirstName}" 
+                                           Margin="0" 
+                                           FontSize="12"/>
+                                <TextBlock Text="{Binding Text}" 
+                                           Margin="0" 
+                                           FontSize="15"/>
+                                <TextBlock Text="{Binding Time}" 
+                                           Margin="10 0" 
+                                           FontSize="10" 
+                                           Foreground="Gray" 
+                                           TextAlignment="Right"/>
                             </StackPanel>
                         </Border>
                     </DataTemplate>
@@ -100,7 +127,7 @@
                   FontSize="20"
                   Header="Отправка сообщения"
                   HorizontalAlignment="Stretch" 
-                  Margin="5"
+                  Margin="5,5,5,4"
                   VerticalAlignment="Stretch" 
                   >
                 <StackPanel>
@@ -109,15 +136,40 @@
                            Visibility="Collapsed"
                            Margin="5"/>
 
-                    <TextBox x:Name="txtMsgSend" FontSize="20" Margin="5"/>
+                    <TextBox x:Name="txtMsgSend" 
+                             FontSize="20" 
+                             Margin="5" 
+                             TextChanged="txtMsgSend_TextChanged"/>
 
                     <Button x:Name="btnMsgSend"
                             FontSize="20" 
                             Content="Отправить"
                             Margin="5"
-                            Click="btnMsgSendClick"/>
+                            Click="btnMsgSendClick" 
+                            IsEnabled="False"/>
                 </StackPanel>
             </GroupBox>
+            <DockPanel 
+                Grid.Column="1" 
+                Grid.RowSpan="2">
+                <Button x:Name="SaveHistory" 
+                        Height="20"
+                        VerticalAlignment="Bottom" 
+                        Content="Сохранить Историю" 
+                        FontSize="10" 
+                        Click="SaveHistory_Click" 
+                        VerticalContentAlignment="Center" 
+                        Margin="5"
+                    />
+                <Button x:Name="OpenSaveFile"
+                        Height="20"
+                        VerticalAlignment="Bottom" 
+                        Content="Открыть Загруженное" 
+                        FontSize="10" 
+                        Margin="5" 
+                        DockPanel.Dock="Right" Click="OpenSaveFile_Click"/>
+            </DockPanel>
+            
         </Grid>
     </Grid>
 

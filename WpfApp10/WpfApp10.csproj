@@ -75,6 +75,7 @@
     <Compile Include="StructRss.cs" />
     <Compile Include="TelegramBot\ActionBot.cs" />
     <Compile Include="TelegramBot\BotTelegram.cs" />
+    <Compile Include="TelegramBot\MessageLog.cs" />
     <Compile Include="Utils.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
