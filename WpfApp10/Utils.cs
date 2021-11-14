@@ -52,20 +52,29 @@ public class Utils{
     /// Ожидание файла если он занят
     /// </summary>
     /// <returns></returns>
-    private FileStream FileWait()
+    public FileStream FileWait(string file)
     {
-            FileStream fs;
-            while (true)
-            {
-                fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+        FileStream fs;
+        while (true)
+        {
+            fs = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
 
-                if (fs.CanRead)
-                {
-                    Thread.Sleep(1000);
-                    break;
-                }
+            if (fs.CanRead)
+            {
+                Thread.Sleep(1000);
+                break;
             }
+        }
         return fs;
+    }
+
+    /// <summary>
+    /// Ожидание файла если он занят
+    /// </summary>
+    /// <returns></returns>
+    public FileStream FileWait()
+    {
+        return FileWait(filename);
     }
 
     /// <summary>

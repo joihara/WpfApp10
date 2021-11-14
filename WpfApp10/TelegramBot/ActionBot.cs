@@ -33,6 +33,37 @@ namespace WpfApp10.TelegramBot
                                                         text: usage,
                                                         replyMarkup: new ReplyKeyboardRemove());
         }
+
+        /// <summary>
+        /// Отправка файлов пользователю
+        /// </summary>
+        /// <param name="botClient"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public static async Task<Message> SendFile(ITelegramBotClient botClient, Message message)
+        {
+            string[] files = message.Text.Split(' ');
+            if (files.Length > 1)
+            {
+                var temp = files.ToList();
+                temp.RemoveAt(0);
+                var file = string.Join(" ", temp);
+
+                FileStream stream;
+                try
+                {
+                    stream = System.IO.File.OpenRead($@"Files/{file}");
+                }
+                catch (FileNotFoundException)
+                {
+                    return await botClient.SendTextMessageAsync(message.Chat.Id, "Файл не существует");
+                }
+                InputOnlineFile inputOnlineFile = new InputOnlineFile(stream, file);
+                return await botClient.SendDocumentAsync(message.Chat.Id, inputOnlineFile);
+            }
+            return await botClient.SendTextMessageAsync(message.Chat.Id, "Не введено название файла");
+        }
+
         /// <summary>
         /// Получение файлов от пользователя
         /// </summary>
@@ -58,7 +89,6 @@ namespace WpfApp10.TelegramBot
                     await SendTextUser(botClient, message, "Голосовое сообщение загружено");
                     break;
                 case MessageType.Document:
-
                     GetMessageDownload(botClient, message.Document.FileId, message.Document.FileName);
                     await SendTextUser(botClient, message, "Документ загружен");
                     break;
@@ -80,19 +110,41 @@ namespace WpfApp10.TelegramBot
             string nameFile = $"Voice{countVoice}.ogg";
 
             var file = await botClient.GetFileAsync(selectID);
-            FileStream fs = new FileStream($@"Files/{nameFile}", FileMode.Create);
+            FileStream fs = utils.FileWait($@"Files/{nameFile}");
             await botClient.DownloadFileAsync(file.FilePath, fs);
             fs.Close();
             fs.Dispose();
         }
 
+        private static Utils utils = new Utils();
+
         public static async void GetMessageDownload(ITelegramBotClient botClient, string selectID, string nameFile)
         {
             var file = await botClient.GetFileAsync(selectID);
-            FileStream fs = new FileStream($@"Files/{nameFile}", FileMode.Create);
+            FileStream fs = utils.FileWait($@"Files/{nameFile}");
             await botClient.DownloadFileAsync(file.FilePath, fs);
             fs.Close();
             fs.Dispose();
+        }
+
+        /// <summary>
+        /// Получение файлов в системе
+        /// </summary>
+        /// <param name="botClient"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public static async Task<Message> GetListFile(ITelegramBotClient botClient, Message message)
+        {
+            var list = Directory.GetFiles("Files");
+
+            var outMessage = "";
+            int index = 1;
+            foreach (var item in list)
+            {
+                outMessage += $"{index++}){item.Substring(item.IndexOf("/")+7)}\n";
+            }
+
+            return await botClient.SendTextMessageAsync(message.Chat.Id, outMessage);
         }
 
         public static async Task<Message> GetNews(ITelegramBotClient botClient, Message message)

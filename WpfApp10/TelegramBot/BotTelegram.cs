@@ -60,53 +60,28 @@ namespace WpfApp10.TelegramBot
         /// <returns></returns>
         async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-            string text = $"{DateTime.Now.ToLongTimeString()}: " +
-                $"{update.Message.Chat.FirstName} " +
-                $"{update.Message.Chat.Id} " +
-                $"{update.Message.Text}";
 
-            if (update.Message.Text == null) return;
-
-            var messageText = update.Message.Text;
-
-            main.Dispatcher.Invoke(() =>
+            if (update.Message.Text != null)
             {
-                BotMessageLog.Add(
-                new MessageLog(
-                    DateTime.Now.ToLongTimeString(), messageText, update.Message.Chat.FirstName, update.Message.Chat.Id));
-            });
+
+                var messageText = update.Message.Text;
+
+                main.Dispatcher.Invoke(() =>
+                {
+                    BotMessageLog.Add(
+                    new MessageLog(
+                        DateTime.Now.ToLongTimeString(),
+                        messageText,
+                        update.Message.Chat.FirstName,
+                        update.Message.Chat.Id));
+                });
+            }
 
             Task handler = null;
             switch (update.Type)
             {
-                case UpdateType.Unknown:
-                    break;
                 case UpdateType.Message:
                     handler = BotOnMessageReceived(botClient, update.Message);
-                    break;
-                case UpdateType.InlineQuery:
-                    break;
-                case UpdateType.ChosenInlineResult:
-                    break;
-                case UpdateType.CallbackQuery:
-                    break;
-                case UpdateType.EditedMessage:
-                    break;
-                case UpdateType.ChannelPost:
-                    break;
-                case UpdateType.EditedChannelPost:
-                    break;
-                case UpdateType.ShippingQuery:
-                    break;
-                case UpdateType.PreCheckoutQuery:
-                    break;
-                case UpdateType.Poll:
-                    break;
-                case UpdateType.PollAnswer:
-                    break;
-                case UpdateType.MyChatMember:
-                    break;
-                case UpdateType.ChatMember:
                     break;
                 default:
                     handler = UnknownUpdateHandlerAsync(botClient, update);
@@ -138,84 +113,19 @@ namespace WpfApp10.TelegramBot
         /// <param name="botClient"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        private static async Task BotOnMessageReceived(ITelegramBotClient botClient, Message message)
+        private async Task BotOnMessageReceived(ITelegramBotClient botClient, Message message)
         {
-            Console.WriteLine($"Receive message type: {message.Type}");
             bool selectId = false;
             switch (message.Type)
             {
-                case MessageType.Unknown:
-                    break;
-                case MessageType.Text:
-                    break;
                 case MessageType.Photo:
                     selectId = true;
-                    break;
-                case MessageType.Audio:
-                    break;
-                case MessageType.Video:
                     break;
                 case MessageType.Voice:
                     selectId = true;
                     break;
                 case MessageType.Document:
                     selectId = true;
-                    break;
-                case MessageType.Sticker:
-                    break;
-                case MessageType.Location:
-                    break;
-                case MessageType.Contact:
-                    break;
-                case MessageType.Venue:
-                    break;
-                case MessageType.Game:
-                    break;
-                case MessageType.VideoNote:
-                    break;
-                case MessageType.Invoice:
-                    break;
-                case MessageType.SuccessfulPayment:
-                    break;
-                case MessageType.WebsiteConnected:
-                    break;
-                case MessageType.ChatMembersAdded:
-                    break;
-                case MessageType.ChatMemberLeft:
-                    break;
-                case MessageType.ChatTitleChanged:
-                    break;
-                case MessageType.ChatPhotoChanged:
-                    break;
-                case MessageType.MessagePinned:
-                    break;
-                case MessageType.ChatPhotoDeleted:
-                    break;
-                case MessageType.GroupCreated:
-                    break;
-                case MessageType.SupergroupCreated:
-                    break;
-                case MessageType.ChannelCreated:
-                    break;
-                case MessageType.MigratedToSupergroup:
-                    break;
-                case MessageType.MigratedFromGroup:
-                    break;
-                case MessageType.Poll:
-                    break;
-                case MessageType.Dice:
-                    break;
-                case MessageType.MessageAutoDeleteTimerChanged:
-                    break;
-                case MessageType.ProximityAlertTriggered:
-                    break;
-                case MessageType.VoiceChatScheduled:
-                    break;
-                case MessageType.VoiceChatStarted:
-                    break;
-                case MessageType.VoiceChatEnded:
-                    break;
-                case MessageType.VoiceChatParticipantsInvited:
                     break;
                 default:
                     break;
@@ -229,12 +139,12 @@ namespace WpfApp10.TelegramBot
                     case "/start":
                         action = ActionBot.Usage(botClient, message);
                         break;
-                    //case "/SendFile":
-                    //    action = ActionBot.SendFile(botClient, message);
-                    //    break;
-                    //case "/Files":
-                    //    action = ActionBot.Usage(botClient, message);
-                    //    break;
+                    case "/SendFile":
+                        action = ActionBot.SendFile(botClient, message);
+                        break;
+                    case "/Files":
+                        action = ActionBot.GetListFile(botClient, message);
+                        break;
                     case "/News":
                         action = ActionBot.GetNews(botClient, message);
                         break;
@@ -249,6 +159,34 @@ namespace WpfApp10.TelegramBot
             else if (selectId)
             {
                 await ActionBot.DownloadFile(botClient, message);
+                string fileName = "";
+                switch (message.Type)
+                {
+                    case MessageType.Photo:
+                        foreach (var item in message.Photo)
+                        {
+                            fileName += item.FileId;
+                        }
+                        break;
+                    case MessageType.Voice:
+
+                        fileName = message.Voice.FileId;
+                        break;
+                    case MessageType.Document:
+                        fileName = message.Document.FileName;
+                        break;
+                    default:
+                        break;
+                }
+                main.Dispatcher.Invoke(() =>
+                {
+                    BotMessageLog.Add(
+                new MessageLog(
+                    DateTime.Now.ToLongTimeString(),
+                    $"Получен файл {fileName}",
+                    message.Chat.FirstName,
+                    message.Chat.Id));
+                });
             }
 
         }
